@@ -1,8 +1,8 @@
-#include "layer.h"
+#include "network.h"
 
 int main(int argc, char *argv[])
 {
-    nn::layer l(4, 3);
-    nn::matrix input(3, 2);
-    nn::matrix output = l.forward(input);
+    nn::sigmoid sgm;
+    nn::network n(sgm, {2, 3, 1});
+    std::vector<double> o = n.forward({1, 1});
 }
