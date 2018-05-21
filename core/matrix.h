@@ -1,5 +1,6 @@
 #include <cstddef>
 #include <vector>
+#include <cassert>
 
 namespace nn
 {
@@ -23,11 +24,17 @@ public:
 
   matrix operator+(const matrix &rhs) const
   {
-    matrix sum(rhs.r, c);
-    for (size_t i = 0; i < r; ++i)
-      for (size_t j = 0; j < c; ++j)
-        sum._m[i][j] += _m[i][j] + rhs._m[i][j];
-    return sum;
+    if (r != rhs.r || c != rhs.c)
+    {
+    }
+    else
+    {
+      matrix sum(r, c);
+      for (size_t i = 0; i < r; ++i)
+        for (size_t j = 0; j < c; ++j)
+          sum._m[i][j] += _m[i][j] + rhs._m[i][j];
+      return sum;
+    }
   }
 
   matrix operator*(const matrix &rhs) const

@@ -10,7 +10,7 @@ private:
   matrix _b;
 
 public:
-  layer(const std::size_t &lr_size, const std::size_t &nr_size);
+  layer(const std::size_t &nr_size, const std::size_t &lr_size);
   ~layer();
 
   matrix forward(const matrix &input);

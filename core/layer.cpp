@@ -4,7 +4,7 @@
 namespace nn
 {
 
-layer::layer(const std::size_t &lr_size, const std::size_t &nr_size) : _b(lr_size, 1), _w(lr_size, nr_size)
+layer::layer(const std::size_t &nr_size, const std::size_t &lr_size) : _b(1, lr_size), _w(nr_size, lr_size)
 {
     std::default_random_engine generator;
     std::normal_distribution<double> distribution(0, 1);
@@ -19,5 +19,5 @@ layer::layer(const std::size_t &lr_size, const std::size_t &nr_size) : _b(lr_siz
 
 layer::~layer() {}
 
-matrix layer::forward(const matrix &input) { return input * _w + _b; }
+matrix layer::forward(const matrix &input) { return _w * input + _b; }
 } // namespace nn
