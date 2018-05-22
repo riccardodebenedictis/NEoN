@@ -1,5 +1,6 @@
 #include "error_function.h"
 #include "network.h"
+#include <math.h>
 
 namespace nn
 {

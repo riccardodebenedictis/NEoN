@@ -26,6 +26,7 @@ private:
 
 public:
   neuron(activation_function &af, const std::size_t &size);
+  neuron(const neuron &orig) = delete;
   ~neuron();
 
   double forward(const std::vector<double> &input);
@@ -47,6 +48,7 @@ public:
 
 public:
   layer(activation_function &af, const std::size_t &lr_size, const std::size_t &nr_size);
+  layer(const layer &orig) = delete;
   ~layer();
 
   neuron &get_neuron(const std::size_t &n) const { return *neurons[n]; }
@@ -67,6 +69,7 @@ public:
 
 public:
   network(error_function &ef, activation_function &af, const std::vector<std::size_t> &sizes);
+  network(const network &orig) = delete;
   ~network();
 
   layer &get_layer(const std::size_t &l) const { return *layers[l]; }
