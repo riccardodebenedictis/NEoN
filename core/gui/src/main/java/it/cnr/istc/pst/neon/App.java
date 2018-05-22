@@ -16,8 +16,22 @@
  */
 package it.cnr.istc.pst.neon;
 
+import java.awt.Dimension;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.JFrame;
+
 import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.data.time.Millisecond;
+import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 
 /**
@@ -30,7 +44,40 @@ public class App {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        System.out.println("Starting..");
-        JFreeChart chart = ChartFactory.createTimeSeriesChart("test", "", "Error", new TimeSeriesCollection());
+        TimeSeries error_series = new TimeSeries("Error");
+        TimeSeriesCollection collection = new TimeSeriesCollection(error_series);
+        try (ServerSocket serverSocket = new ServerSocket(1100)) {
+            Socket clientSocket = serverSocket.accept();
+            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
+            String inputLine;
+            while ((inputLine = in.readLine()) != null) {
+                if (inputLine.startsWith("start_training")) {
+                    double error = Double.parseDouble(inputLine.substring(15));
+                    error_series.addOrUpdate(new Millisecond(), error);
+                } else if (inputLine.startsWith("stop_training")) {
+                    double error = Double.parseDouble(inputLine.substring(14));
+                    error_series.addOrUpdate(new Millisecond(), error);
+                } else if (inputLine.startsWith("start_epoch")) {
+                    double error = Double.parseDouble(inputLine.substring(12));
+                    error_series.addOrUpdate(new Millisecond(), error);
+                } else if (inputLine.startsWith("stop_epoch")) {
+                    double error = Double.parseDouble(inputLine.substring(11));
+                    error_series.addOrUpdate(new Millisecond(), error);
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        JFrame frame = new JFrame("NEoN");
+        frame.setPreferredSize(new Dimension(800, 600));
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        JFreeChart chart = ChartFactory.createTimeSeriesChart("Error", "", "Error", collection);
+        frame.add(new ChartPanel(chart));
+
+        frame.setVisible(true);
     }
 }
