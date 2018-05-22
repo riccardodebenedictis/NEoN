@@ -14,18 +14,23 @@ public:
   const std::vector<double> output;
 
 public:
-  training_data(std::vector<double> &input, std::vector<double> &output) : input(input), output(output) {}
+  training_data(const std::vector<double> &input, const std::vector<double> &output) : input(input), output(output) {}
   ~training_data() {}
 };
 
 class error_function
 {
+  friend class network;
+
 public:
   error_function() {}
   ~error_function() {}
 
   virtual double error(network &net, std::vector<training_data *> &data) = 0;
   virtual void compute_deltas(network &net, training_data &data) = 0;
+
+protected:
+  inline void set_delta(network &net, const size_t &l, const size_t &n, const double &delta);
 };
 
 class mean_squared_error : public error_function

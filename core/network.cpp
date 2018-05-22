@@ -6,7 +6,7 @@
 namespace nn
 {
 
-neuron::neuron(activation_function &af, const size_t &size) : act_f(af), weights(std::vector<double>(size)), size(size)
+neuron::neuron(activation_function &af, const size_t &size) : act_f(af), size(size), weights(std::vector<double>(size)), nabla_w(std::vector<double>(size))
 {
     std::default_random_engine generator;
     std::normal_distribution<double> distribution(0, 1);
@@ -47,9 +47,9 @@ std::vector<double> layer::forward(const std::vector<double> &input)
     return output;
 }
 
-network::network(error_function &ef, activation_function &af, const std::vector<size_t> &sizes) : error_f(ef), layers(sizes.size() - 1)
+network::network(error_function &ef, activation_function &af, const std::vector<size_t> &sizes) : error_f(ef), layers(sizes.size() - 1), size(sizes.size() - 1)
 {
-    for (int i = 0; i < sizes.size() - 1; i++)
+    for (size_t i = 0; i < sizes.size() - 1; i++)
         layers[i] = new layer(af, sizes[i + 1], sizes[i]);
     for (neuron *n : layers[0]->neurons)
         n->bias = 0;
@@ -64,7 +64,7 @@ network::~network()
 std::vector<double> network::forward(const std::vector<double> &input)
 {
     std::vector<double> output = layers[0]->forward(input);
-    for (int i = 1; i < layers.size(); i++)
+    for (size_t i = 1; i < layers.size(); i++)
         output = layers[i]->forward(output);
     return output;
 }
