@@ -35,4 +35,14 @@ public:
   double error(network &net, std::vector<training_data *> &data) override;
   void compute_deltas(network &net, training_data &data) override;
 };
+
+class cross_entropy : public error_function
+{
+public:
+  cross_entropy() {}
+  ~cross_entropy() {}
+
+  double error(network &net, std::vector<training_data *> &data) override;
+  void compute_deltas(network &net, training_data &data) override;
+};
 } // namespace nn
