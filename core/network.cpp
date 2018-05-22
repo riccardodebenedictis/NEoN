@@ -53,7 +53,7 @@ std::vector<double> layer::forward(const std::vector<double> &input)
 
 network::network(error_function &ef, activation_function &af, const std::vector<std::size_t> &sizes) : error_f(ef), layers(sizes.size() - 1), size(sizes.size() - 1)
 {
-    for (std::size_t i = 0; i < sizes.size() - 1; i++)
+    for (std::size_t i = 0; i < sizes.size() - 1; ++i)
         layers[i] = new layer(af, sizes[i + 1], sizes[i]);
     for (neuron *n : layers[0]->neurons)
         n->bias = 0;
@@ -134,11 +134,11 @@ void network::backprop(const training_data &data)
     {
         layer &l = *layers[i];
         layer &l_prev = *layers[i - 1];
-        for (std::size_t j = 0; j < l.size; j++)
+        for (std::size_t j = 0; j < l.size; ++j)
         {
             neuron &n = *l.neurons[j];
             n.nabla_b += n.delta;
-            for (std::size_t k = 0; k < l_prev.size; k++)
+            for (std::size_t k = 0; k < l_prev.size; ++k)
                 n.nabla_w[k] += l_prev.neurons[k]->output * n.delta;
         }
     }
@@ -147,7 +147,7 @@ void network::backprop(const training_data &data)
     {
         neuron &n = *l0.neurons[i];
         n.nabla_b += n.delta;
-        for (std::size_t k = 0; k < data.input.size(); k++)
+        for (std::size_t k = 0; k < data.input.size(); ++k)
             n.nabla_w[k] += data.input[k] * n.delta;
     }
 }
