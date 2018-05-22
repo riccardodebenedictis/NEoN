@@ -1,4 +1,6 @@
 #include "network.h"
+#include "error_function.h"
+#include "activation_function.h"
 #include <random>
 
 namespace nn
@@ -45,7 +47,7 @@ std::vector<double> layer::forward(const std::vector<double> &input)
     return output;
 }
 
-network::network(activation_function &af, const std::vector<size_t> &sizes) : layers(sizes.size() - 1)
+network::network(error_function &ef, activation_function &af, const std::vector<size_t> &sizes) : error_f(ef), layers(sizes.size() - 1)
 {
     for (int i = 0; i < sizes.size() - 1; i++)
         layers[i] = new layer(af, sizes[i + 1], sizes[i]);

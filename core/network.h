@@ -1,8 +1,10 @@
-#include "activation_function.h"
 #include <vector>
 
 namespace nn
 {
+
+class error_function;
+class activation_function;
 
 class neuron
 {
@@ -44,10 +46,11 @@ public:
 class network
 {
 private:
+  error_function &error_f;
   std::vector<layer *> layers;
 
 public:
-  network(activation_function &af, const std::vector<size_t> &sizes);
+  network(error_function &ef, activation_function &af, const std::vector<size_t> &sizes);
   ~network();
 
   std::vector<double> forward(const std::vector<double> &input);
