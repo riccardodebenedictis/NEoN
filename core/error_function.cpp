@@ -26,7 +26,10 @@ void mean_squared_error::compute_deltas(network &net, training_data &data)
     // back propagation..
     // we compute the deltas for the output layer..
     for (size_t i = 0; i < data.output.size(); i++)
-        set_delta(net, net.size - 1, i, -(data.output[i] - c_output[i]) * net.get_layer(net.size - 1).get_neuron(i).act_f.derivative());
+    {
+        neuron &n = net.get_layer(net.size - 1).get_neuron(i);
+        set_delta(net, net.size - 1, i, -(data.output[i] - c_output[i]) * n.act_f.derivative(n.get_output()));
+    }
 
     // we compute the deltas for the other layers..
     for (size_t i = net.size - 2; i >= 0; i--)
@@ -39,7 +42,7 @@ void mean_squared_error::compute_deltas(network &net, training_data &data)
             double delta = 0;
             for (size_t k = 0; k < l_next.size; k++)
                 delta += l_next.get_neuron(k).get_weight(j) * l_next.get_neuron(k).get_delta();
-            delta *= l.get_neuron(j).act_f.derivative();
+            delta *= l.get_neuron(j).act_f.derivative(l.get_neuron(j).get_output());
             set_delta(net, i, j, delta);
         }
     }

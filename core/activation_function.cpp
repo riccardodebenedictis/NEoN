@@ -7,14 +7,13 @@ namespace nn
 double sigmoid::compute(const double &val)
 {
     if (val > 100)
-        output = 1.0;
+        return 1.0;
     else if (val < -100)
-        output = 0.0;
+        return 0.0;
     else
-        output = (1.0 / (1.0 + exp(-val)));
-    return output;
+        return (1.0 / (1.0 + exp(-val)));
 }
 
-double sigmoid::derivative() { return output * (1.0 - output); }
+double sigmoid::derivative(const double &val) { return val * (1.0 - val); }
 
 } // namespace nn

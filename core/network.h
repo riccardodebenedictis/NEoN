@@ -30,7 +30,9 @@ public:
 
   double forward(const std::vector<double> &input);
   double get_weight(const size_t &w) const { return weights[w]; }
+  double get_bias() const { return bias; }
   double get_delta() const { return delta; }
+  double get_output() const { return output; }
 };
 
 class layer
