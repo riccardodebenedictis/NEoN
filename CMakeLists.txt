@@ -19,10 +19,10 @@ set ( CMAKE_CXX_STANDARD 14 )
 
 file( GLOB SOURCES main.cpp core/*.cpp )
 if( CMAKE_BUILD_TYPE MATCHES Debug )
-  #list( APPEND SOURCES core/listener/socket_listener.cpp ) 
+  list( APPEND SOURCES core/listeners/socket_listener.cpp ) 
 endif()
 
-include_directories( core core/listener )
+include_directories( core core/listeners )
 
 add_executable( ${PROJECT_NAME} ${SOURCES} )
 

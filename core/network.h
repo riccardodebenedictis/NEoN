@@ -8,6 +8,10 @@
 namespace nn
 {
 
+#ifndef NDEBUG
+class network_listener;
+#endif
+
 class neuron
 {
   friend class network;
@@ -63,6 +67,10 @@ class network
 private:
   error_function &error_f;
   std::vector<layer *> layers;
+#ifndef NDEBUG
+private:
+  std::vector<network_listener *> listeners; // the network listeners..
+#endif
 
 public:
   const std::size_t size;
@@ -77,6 +85,7 @@ public:
   std::vector<double> forward(const std::vector<double> &input);
 
   void sgd(std::vector<training_data *> &data, const std::size_t &epochs, const std::size_t &mini_batch_size, const double &eta);
+  double get_error(const std::vector<training_data *> &data) { return error_f.error(*this, data); }
 
 private:
   void set_delta(const std::size_t &l, const std::size_t &n, const double &delta) { layers[l]->neurons[n]->delta = delta; }

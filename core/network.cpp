@@ -1,6 +1,9 @@
 #include "network.h"
 #include "error_function.h"
 #include "activation_function.h"
+#ifndef NDEBUG
+#include "network_listener.h"
+#endif
 #include <random>
 #include <algorithm>
 
@@ -72,15 +75,35 @@ std::vector<double> network::forward(const std::vector<double> &input)
 
 void network::sgd(std::vector<training_data *> &data, const std::size_t &epochs, const std::size_t &mini_batch_size, const double &eta)
 {
+#ifndef NDEBUG
+    // we notify the listeners that we are starting a training phase..
+    for (const auto &l : listeners)
+        l->start_training(get_error(data));
+#endif
     std::default_random_engine gen;
     for (std::size_t i = 1; i <= epochs; ++i)
     {
+#ifndef NDEBUG
+        // we notify the listeners that we are starting a new epoch..
+        for (const auto &l : listeners)
+            l->start_epoch(get_error(data));
+#endif
         // we shuffle the training data..
         std::shuffle(data.begin(), data.end(), gen);
         // we partition the training data into mini batches of 'mini_batch_size' size..
         for (std::size_t j = 0; j <= data.size() - mini_batch_size; j += mini_batch_size)
             update_mini_batch(std::vector<training_data *>(data.begin() + j, data.begin() + j + mini_batch_size), eta);
+#ifndef NDEBUG
+        // we notify the listeners that we have finished an epoch..
+        for (const auto &l : listeners)
+            l->stop_epoch(get_error(data));
+#endif
     }
+#ifndef NDEBUG
+    // we notify the listeners that we have finished a training phase..
+    for (const auto &l : listeners)
+        l->stop_training(get_error(data));
+#endif
 }
 
 void network::update_mini_batch(const std::vector<training_data *> &mini_batch, const double &eta)

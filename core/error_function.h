@@ -28,6 +28,7 @@ public:
   error_function(const error_function &orig) = delete;
   ~error_function() {}
 
+private:
   virtual double error(network &net, const std::vector<training_data *> &data) = 0;
   virtual void compute_deltas(network &net, const training_data &data) = 0;
 
