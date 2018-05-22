@@ -1,10 +1,12 @@
+#pragma once
+
+#include "error_function.h"
+#include "activation_function.h"
 #include <vector>
+#include <cstddef>
 
 namespace nn
 {
-
-class error_function;
-class activation_function;
 
 class neuron
 {
