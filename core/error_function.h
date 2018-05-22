@@ -30,7 +30,7 @@ public:
   virtual void compute_deltas(network &net, const training_data &data) = 0;
 
 protected:
-  inline void set_delta(network &net, const size_t &l, const size_t &n, const double &delta);
+  inline void set_delta(network &net, const std::size_t &l, const std::size_t &n, const double &delta);
 };
 
 class mean_squared_error : public error_function
