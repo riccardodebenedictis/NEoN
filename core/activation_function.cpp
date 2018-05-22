@@ -4,7 +4,7 @@
 namespace nn
 {
 
-double sigmoid::compute(const double &val)
+double sigmoid::compute(const double &val) const
 {
     if (val > 100)
         return 1.0;
@@ -14,6 +14,6 @@ double sigmoid::compute(const double &val)
         return (1.0 / (1.0 + exp(-val)));
 }
 
-double sigmoid::derivative(const double &val) { return val * (1.0 - val); }
+double sigmoid::derivative(const double &val) const { return val * (1.0 - val); }
 
 } // namespace nn
