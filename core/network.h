@@ -2,6 +2,7 @@
 
 #include "error_function.h"
 #include "activation_function.h"
+#include <random>
 #include <vector>
 #include <cstddef>
 
@@ -29,7 +30,7 @@ private:
   double nabla_b;
 
 public:
-  neuron(activation_function &af, const std::size_t &size);
+  neuron(std::default_random_engine &gen, activation_function &af, const std::size_t &size);
   neuron(const neuron &orig) = delete;
   ~neuron();
 
@@ -51,7 +52,7 @@ public:
   const std::size_t size;
 
 public:
-  layer(activation_function &af, const std::size_t &lr_size, const std::size_t &nr_size);
+  layer(std::default_random_engine &gen, activation_function &af, const std::size_t &lr_size, const std::size_t &nr_size);
   layer(const layer &orig) = delete;
   ~layer();
 
@@ -65,6 +66,7 @@ class network
   friend void error_function::set_delta(network &net, const std::size_t &l, const std::size_t &n, const double &delta);
 
 private:
+  std::default_random_engine gen;
   error_function &error_f;
   std::vector<layer *> layers;
 #ifndef NDEBUG

@@ -4,15 +4,13 @@
 #ifndef NDEBUG
 #include "network_listener.h"
 #endif
-#include <random>
 #include <algorithm>
 
 namespace nn
 {
 
-neuron::neuron(activation_function &af, const std::size_t &size) : act_f(af), size(size), weights(std::vector<double>(size)), nabla_w(std::vector<double>(size))
+neuron::neuron(std::default_random_engine &gen, activation_function &af, const std::size_t &size) : act_f(af), size(size), weights(std::vector<double>(size)), nabla_w(std::vector<double>(size, 0.0)), nabla_b(0)
 {
-    std::default_random_engine gen;
     std::normal_distribution<double> distribution(0, 1);
 
     for (std::size_t i = 0; i < size; ++i)
@@ -31,10 +29,10 @@ double neuron::forward(const std::vector<double> &input)
     return output;
 }
 
-layer::layer(activation_function &af, const std::size_t &lr_size, const std::size_t &nr_size) : neurons(lr_size), size(lr_size)
+layer::layer(std::default_random_engine &gen, activation_function &af, const std::size_t &lr_size, const std::size_t &nr_size) : neurons(lr_size), size(lr_size)
 {
     for (std::size_t i = 0; i < size; ++i)
-        neurons[i] = new neuron(af, nr_size);
+        neurons[i] = new neuron(gen, af, nr_size);
 }
 
 layer::~layer()
@@ -54,7 +52,7 @@ std::vector<double> layer::forward(const std::vector<double> &input)
 network::network(error_function &ef, activation_function &af, const std::vector<std::size_t> &sizes) : error_f(ef), layers(sizes.size() - 1), size(sizes.size() - 1)
 {
     for (std::size_t i = 0; i < sizes.size() - 1; ++i)
-        layers[i] = new layer(af, sizes[i + 1], sizes[i]);
+        layers[i] = new layer(gen, af, sizes[i + 1], sizes[i]);
     for (neuron *n : layers[0]->neurons)
         n->bias = 0;
 }
@@ -80,7 +78,6 @@ void network::sgd(std::vector<training_data *> &data, const std::size_t &epochs,
     for (const auto &l : listeners)
         l->start_training(get_error(data));
 #endif
-    std::default_random_engine gen;
     for (std::size_t i = 1; i <= epochs; ++i)
     {
 #ifndef NDEBUG

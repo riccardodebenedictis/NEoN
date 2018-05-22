@@ -74,7 +74,7 @@ void cross_entropy::compute_deltas(network &net, const training_data &data)
     // we compute the deltas for the other layers..
     for (std::size_t i = net.size - 1; i > 0; --i)
     {
-        layer &l = net.get_layer(i + 1);
+        layer &l = net.get_layer(i - 1);
         layer &l_next = net.get_layer(i);
 
         for (std::size_t j = 0; j < l.size; ++j)
@@ -82,7 +82,7 @@ void cross_entropy::compute_deltas(network &net, const training_data &data)
             double delta = 0;
             for (std::size_t k = 0; k < l_next.size; ++k)
                 delta += l_next.get_neuron(k).get_weight(j) * l_next.get_neuron(k).get_delta();
-            set_delta(net, i + 1, j, delta);
+            set_delta(net, i - 1, j, delta);
         }
     }
 }
