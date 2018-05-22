@@ -46,6 +46,19 @@ public class App {
     public static void main(String[] args) {
         TimeSeries error_series = new TimeSeries("Error");
         TimeSeriesCollection collection = new TimeSeriesCollection(error_series);
+
+        JFrame frame = new JFrame("NEoN");
+        frame.setPreferredSize(new Dimension(800, 600));
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        JFreeChart chart = ChartFactory.createTimeSeriesChart("Error", "", "Error", collection);
+        frame.add(new ChartPanel(chart));
+
+        frame.setVisible(true);
+
+        System.out.println("waiting for data..");
         try (ServerSocket serverSocket = new ServerSocket(1100)) {
             Socket clientSocket = serverSocket.accept();
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
@@ -68,16 +81,5 @@ public class App {
         } catch (IOException ex) {
             Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        JFrame frame = new JFrame("NEoN");
-        frame.setPreferredSize(new Dimension(800, 600));
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        JFreeChart chart = ChartFactory.createTimeSeriesChart("Error", "", "Error", collection);
-        frame.add(new ChartPanel(chart));
-
-        frame.setVisible(true);
     }
 }

@@ -94,5 +94,11 @@ private:
 
   void update_mini_batch(const std::vector<training_data *> &mini_batch, const double &eta);
   void backprop(const training_data &data);
+
+#ifndef NDEBUG
+public:
+  void add_listener(network_listener &l);
+  void remove_listener(network_listener &l);
+#endif
 };
 } // namespace nn

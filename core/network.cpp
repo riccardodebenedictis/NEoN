@@ -148,4 +148,15 @@ void network::backprop(const training_data &data)
             n.nabla_w[k] += data.input[k] * n.delta;
     }
 }
+
+#ifndef NDEBUG
+void network::add_listener(network_listener &l)
+{
+    listeners.push_back(&l);
+}
+void network::remove_listener(network_listener &l)
+{
+    listeners.erase(std::find(listeners.begin(), listeners.end(), &l));
+}
+#endif
 } // namespace nn

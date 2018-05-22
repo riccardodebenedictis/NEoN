@@ -1,4 +1,7 @@
 #include "network.h"
+#ifndef NDEBUG
+#include "socket_listener.h"
+#endif
 #include <cassert>
 
 using namespace nn;
@@ -19,8 +22,13 @@ int main(int argc, char *argv[])
     // this is the current error on training data before the training..
     double c_err = net.get_error(data);
 
+#ifndef NDEBUG
+    socket_listener l;
+    net.add_listener(l);
+#endif
+
     // we train the network through stochastic gradient descent..
-    net.sgd(data, 2000, 2, 0.05);
+    net.sgd(data, 20000, 2, 0.005);
 
     // this is the current error on training data after the training..
     double t_err = net.get_error(data);

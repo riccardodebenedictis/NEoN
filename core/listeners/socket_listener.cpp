@@ -40,11 +40,11 @@ socket_listener::~socket_listener()
 #endif
 }
 
-void socket_listener::start_training(const double &error) { send_message("start_training " + std::to_string(error)); }
-void socket_listener::stop_training(const double &error) { send_message("stop_training " + std::to_string(error)); }
+void socket_listener::start_training(const double &error) { send_message("start_training " + std::to_string(error) + "\n"); }
+void socket_listener::stop_training(const double &error) { send_message("stop_training " + std::to_string(error) + "\n"); }
 
-void socket_listener::start_epoch(const double &error) { send_message("start_epoch " + std::to_string(error)); }
-void socket_listener::stop_epoch(const double &error) { send_message("stop_epoch " + std::to_string(error)); }
+void socket_listener::start_epoch(const double &error) { send_message("start_epoch " + std::to_string(error) + "\n"); }
+void socket_listener::stop_epoch(const double &error) { send_message("stop_epoch " + std::to_string(error) + "\n"); }
 
 void socket_listener::send_message(const std::string &msg)
 {
