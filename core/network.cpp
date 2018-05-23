@@ -11,10 +11,10 @@ namespace nn
 
 neuron::neuron(std::default_random_engine &gen, activation_function &af, const std::size_t &size) : act_f(af), size(size), weights(std::vector<double>(size)), nabla_w(std::vector<double>(size, 0.0)), nabla_b(0)
 {
-    std::normal_distribution<double> distribution(0, 1 / std::sqrt(size));
+    std::normal_distribution<double> distribution(0, 1);
 
     for (std::size_t i = 0; i < size; ++i)
-        weights[i] = distribution(gen);
+        weights[i] = distribution(gen) / std::sqrt(size);
     bias = distribution(gen);
 }
 
