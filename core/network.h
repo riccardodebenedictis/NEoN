@@ -86,13 +86,13 @@ public:
 
   std::vector<double> forward(const std::vector<double> &input);
 
-  void sgd(std::vector<data_row *> &tr_data, std::vector<data_row *> &tst_data, const std::size_t &epochs, const std::size_t &mini_batch_size, const double &eta);
+  void sgd(std::vector<data_row *> &tr_data, std::vector<data_row *> &tst_data, const std::size_t &epochs, const std::size_t &mini_batch_size, const double &eta, const double &lambda);
   double get_error(const std::vector<data_row *> &data) { return error_f.error(*this, data); }
 
 private:
   void set_delta(const std::size_t &l, const std::size_t &n, const double &delta) { layers[l]->neurons[n]->delta = delta; }
 
-  void update_mini_batch(const std::vector<data_row *> &mini_batch, const double &eta);
+  void update_mini_batch(const std::vector<data_row *> &mini_batch, const double &eta, const double &lambda);
   void backprop(const data_row &data);
 
 #ifndef NDEBUG

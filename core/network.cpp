@@ -69,7 +69,7 @@ std::vector<double> network::forward(const std::vector<double> &input)
     return output;
 }
 
-void network::sgd(std::vector<data_row *> &tr_data, std::vector<data_row *> &tst_data, const std::size_t &epochs, const std::size_t &mini_batch_size, const double &eta)
+void network::sgd(std::vector<data_row *> &tr_data, std::vector<data_row *> &tst_data, const std::size_t &epochs, const std::size_t &mini_batch_size, const double &eta, const double &lambda)
 {
 #ifndef NDEBUG
     // we notify the listeners that we are starting a training phase..
@@ -87,7 +87,7 @@ void network::sgd(std::vector<data_row *> &tr_data, std::vector<data_row *> &tst
         std::shuffle(tr_data.begin(), tr_data.end(), gen);
         // we partition the training data into mini batches of 'mini_batch_size' size..
         for (std::size_t j = 0; j <= tr_data.size() - mini_batch_size; j += mini_batch_size)
-            update_mini_batch(std::vector<data_row *>(tr_data.begin() + j, tr_data.begin() + j + mini_batch_size), eta);
+            update_mini_batch(std::vector<data_row *>(tr_data.begin() + j, tr_data.begin() + j + mini_batch_size), eta, lambda);
 #ifndef NDEBUG
         // we notify the listeners that we have finished an epoch..
         for (const auto &l : listeners)
@@ -101,7 +101,7 @@ void network::sgd(std::vector<data_row *> &tr_data, std::vector<data_row *> &tst
 #endif
 }
 
-void network::update_mini_batch(const std::vector<data_row *> &mini_batch, const double &eta)
+void network::update_mini_batch(const std::vector<data_row *> &mini_batch, const double &eta, const double &lambda)
 {
     // we perform backpropagation..
     for (data_row *data : mini_batch)
@@ -115,7 +115,7 @@ void network::update_mini_batch(const std::vector<data_row *> &mini_batch, const
             n.bias -= (eta / mini_batch.size()) * n.nabla_b;
             n.nabla_b = 0;
             for (std::size_t k = 0; k < n.size; ++k)
-                n.weights[k] -= (eta / mini_batch.size()) * n.nabla_w[k];
+                n.weights[k] -= (eta / mini_batch.size()) * n.nabla_w[k] + ((eta*lambda) / mini_batch.size()) * n.weights[k];
             n.nabla_w.assign(n.size, 0);
         }
 }
