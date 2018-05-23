@@ -49,8 +49,8 @@ void socket_listener::stop_epoch(const double &tr_error, const double &tst_error
 void socket_listener::send_message(const std::string &msg)
 {
     int total = 0;
-    std::size_t len = msg.size();
-    std::size_t bytesleft = len;
+    int len = static_cast<int>(msg.size());
+    int bytesleft = len;
     int n = -1;
     while (total < len)
     {
