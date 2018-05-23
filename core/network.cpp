@@ -11,7 +11,7 @@ namespace nn
 
 neuron::neuron(std::default_random_engine &gen, activation_function &af, const std::size_t &size) : act_f(af), size(size), weights(std::vector<double>(size)), nabla_w(std::vector<double>(size, 0.0)), nabla_b(0)
 {
-    std::normal_distribution<double> distribution(0, 1);
+    std::normal_distribution<double> distribution(0, 1 / std::sqrt(size));
 
     for (std::size_t i = 0; i < size; ++i)
         weights[i] = distribution(gen);
@@ -115,7 +115,7 @@ void network::update_mini_batch(const std::vector<data_row *> &mini_batch, const
             n.bias -= (eta / mini_batch.size()) * n.nabla_b;
             n.nabla_b = 0;
             for (std::size_t k = 0; k < n.size; ++k)
-                n.weights[k] -= (eta / mini_batch.size()) * n.nabla_w[k] + ((eta*lambda) / mini_batch.size()) * n.weights[k];
+                n.weights[k] -= (eta / mini_batch.size()) * n.nabla_w[k] + ((eta * lambda) / mini_batch.size()) * n.weights[k];
             n.nabla_w.assign(n.size, 0);
         }
 }
