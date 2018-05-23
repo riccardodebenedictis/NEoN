@@ -16,6 +16,7 @@
  */
 package it.cnr.istc.pst.neon;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,6 +27,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
+import javax.swing.JProgressBar;
+
+import com.google.gson.Gson;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -40,12 +44,20 @@ import org.jfree.data.time.TimeSeriesCollection;
  */
 public class App {
 
+    private static final String START_TRAINING = "strt_tr";
+    private static final String STOP_TRAINING = "stp_tr";
+    private static final String START_EPOCH = "strt_epc";
+    private static final String STOP_EPOCH = "stp_epc";
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        TimeSeries error_series = new TimeSeries("Error");
-        TimeSeriesCollection collection = new TimeSeriesCollection(error_series);
+        TimeSeries tr_data_error = new TimeSeries("Training data");
+        TimeSeries tst_data_error = new TimeSeries("Test data");
+        TimeSeriesCollection collection = new TimeSeriesCollection();
+        collection.addSeries(tr_data_error);
+        collection.addSeries(tst_data_error);
 
         JFrame frame = new JFrame("NEoN");
         frame.setPreferredSize(new Dimension(800, 600));
@@ -54,32 +66,67 @@ public class App {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JFreeChart chart = ChartFactory.createTimeSeriesChart("Error", "", "Error", collection);
-        frame.add(new ChartPanel(chart));
+        frame.add(new ChartPanel(chart), BorderLayout.CENTER);
+
+        JProgressBar bar = new JProgressBar();
+        bar.setStringPainted(true);
+        frame.add(bar, BorderLayout.SOUTH);
 
         frame.setVisible(true);
 
+        Gson gson = new Gson();
         System.out.println("waiting for data..");
         try (ServerSocket serverSocket = new ServerSocket(1100)) {
             Socket clientSocket = serverSocket.accept();
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream(), "UTF-8"));
             String inputLine;
             while ((inputLine = in.readLine()) != null) {
-                if (inputLine.startsWith("start_training")) {
-                    double error = Double.parseDouble(inputLine.substring(15));
-                    error_series.addOrUpdate(new Millisecond(), error);
-                } else if (inputLine.startsWith("stop_training")) {
-                    double error = Double.parseDouble(inputLine.substring(14));
-                    error_series.addOrUpdate(new Millisecond(), error);
-                } else if (inputLine.startsWith("start_epoch")) {
-                    double error = Double.parseDouble(inputLine.substring(12));
-                    error_series.addOrUpdate(new Millisecond(), error);
-                } else if (inputLine.startsWith("stop_epoch")) {
-                    double error = Double.parseDouble(inputLine.substring(11));
-                    error_series.addOrUpdate(new Millisecond(), error);
+                if (inputLine.startsWith(START_TRAINING)) {
+                    StartTraining strt_tr = gson.fromJson(inputLine.substring(START_TRAINING.length()),
+                            StartTraining.class);
+                    bar.setValue(0);
+                    bar.setMaximum(strt_tr.n_epcs);
+                    tr_data_error.addOrUpdate(new Millisecond(), strt_tr.tr_error);
+                    tst_data_error.addOrUpdate(new Millisecond(), strt_tr.tst_error);
+                } else if (inputLine.startsWith(STOP_TRAINING)) {
+                    StopTraining stp_tr = gson.fromJson(inputLine.substring(STOP_TRAINING.length()),
+                            StopTraining.class);
+                    tr_data_error.addOrUpdate(new Millisecond(), stp_tr.tr_error);
+                    tst_data_error.addOrUpdate(new Millisecond(), stp_tr.tst_error);
+                } else if (inputLine.startsWith(START_EPOCH)) {
+                    StartEpoch strt_e = gson.fromJson(inputLine.substring(START_EPOCH.length()), StartEpoch.class);
+                    tr_data_error.addOrUpdate(new Millisecond(), strt_e.tr_error);
+                    tst_data_error.addOrUpdate(new Millisecond(), strt_e.tst_error);
+                } else if (inputLine.startsWith(STOP_EPOCH)) {
+                    StopEpoch stp_e = gson.fromJson(inputLine.substring(STOP_EPOCH.length()), StopEpoch.class);
+                    bar.setValue(bar.getValue() + 1);
+                    tr_data_error.addOrUpdate(new Millisecond(), stp_e.tr_error);
+                    tst_data_error.addOrUpdate(new Millisecond(), stp_e.tst_error);
                 }
             }
         } catch (IOException ex) {
             Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    private static class StartTraining {
+        private double tr_error; // the training data error..
+        private double tst_error; // the test data error..
+        private int n_epcs; // the total number of epochs..
+    }
+
+    private static class StopTraining {
+        private double tr_error; // the training data error..
+        private double tst_error; // the test data error..
+    }
+
+    private static class StartEpoch {
+        private double tr_error; // the training data error..
+        private double tst_error; // the test data error..
+    }
+
+    private static class StopEpoch {
+        private double tr_error; // the training data error..
+        private double tst_error; // the test data error..
     }
 }
