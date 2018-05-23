@@ -110,23 +110,23 @@ public class App {
     }
 
     private static class StartTraining {
-        private double tr_error; // the training data error..
-        private double tst_error; // the test data error..
         private int n_epcs; // the total number of epochs..
+        private double tr_error; // the initial error on training data..
+        private double tst_error; // the initial error on test data..
     }
 
     private static class StopTraining {
-        private double tr_error; // the training data error..
-        private double tst_error; // the test data error..
+        private double tr_error; // the final error on training data..
+        private double tst_error; // the final error on test data..
     }
 
     private static class StartEpoch {
-        private double tr_error; // the training data error..
-        private double tst_error; // the test data error..
+        private double tr_error; // the initial error on training data..
+        private double tst_error; // the initial error on test data..
     }
 
     private static class StopEpoch {
-        private double tr_error; // the training data error..
-        private double tst_error; // the test data error..
+        private double tr_error; // the final error on training data..
+        private double tst_error; // the final error on test data..
     }
 }

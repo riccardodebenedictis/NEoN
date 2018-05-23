@@ -17,25 +17,25 @@ namespace nn
 
 class socket_listener : public network_listener
 {
-  private:
+private:
 #ifdef _WIN32
-    SOCKET skt;
+  SOCKET skt;
 #else
-    int skt;
+  int skt;
 #endif
 
-  public:
-    socket_listener();
-    socket_listener(const socket_listener &orig) = delete;
-    ~socket_listener();
+public:
+  socket_listener();
+  socket_listener(const socket_listener &orig) = delete;
+  ~socket_listener();
 
-    void start_training(const double &error) override;
-    void stop_training(const double &error) override;
+  void start_training(const std::size_t &n_epochs, const double &tr_error, const double &tst_error) override;
+  void stop_training(const double &tr_error, const double &tst_error) override;
 
-    void start_epoch(const double &error) override;
-    void stop_epoch(const double &error) override;
+  void start_epoch(const double &tr_error, const double &tst_error) override;
+  void stop_epoch(const double &tr_error, const double &tst_error) override;
 
-  private:
-    void send_message(const std::string &msg);
+private:
+  void send_message(const std::string &msg);
 };
 } // namespace nn

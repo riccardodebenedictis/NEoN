@@ -69,42 +69,42 @@ std::vector<double> network::forward(const std::vector<double> &input)
     return output;
 }
 
-void network::sgd(std::vector<training_data *> &data, const std::size_t &epochs, const std::size_t &mini_batch_size, const double &eta)
+void network::sgd(std::vector<data_row *> &tr_data, std::vector<data_row *> &tst_data, const std::size_t &epochs, const std::size_t &mini_batch_size, const double &eta)
 {
 #ifndef NDEBUG
     // we notify the listeners that we are starting a training phase..
     for (const auto &l : listeners)
-        l->start_training(get_error(data));
+        l->start_training(epochs, get_error(tr_data), get_error(tst_data));
 #endif
     for (std::size_t i = 1; i <= epochs; ++i)
     {
 #ifndef NDEBUG
         // we notify the listeners that we are starting a new epoch..
         for (const auto &l : listeners)
-            l->start_epoch(get_error(data));
+            l->start_epoch(get_error(tr_data), get_error(tst_data));
 #endif
         // we shuffle the training data..
-        std::shuffle(data.begin(), data.end(), gen);
+        std::shuffle(tr_data.begin(), tr_data.end(), gen);
         // we partition the training data into mini batches of 'mini_batch_size' size..
-        for (std::size_t j = 0; j <= data.size() - mini_batch_size; j += mini_batch_size)
-            update_mini_batch(std::vector<training_data *>(data.begin() + j, data.begin() + j + mini_batch_size), eta);
+        for (std::size_t j = 0; j <= tr_data.size() - mini_batch_size; j += mini_batch_size)
+            update_mini_batch(std::vector<data_row *>(tr_data.begin() + j, tr_data.begin() + j + mini_batch_size), eta);
 #ifndef NDEBUG
         // we notify the listeners that we have finished an epoch..
         for (const auto &l : listeners)
-            l->stop_epoch(get_error(data));
+            l->stop_epoch(get_error(tr_data), get_error(tst_data));
 #endif
     }
 #ifndef NDEBUG
     // we notify the listeners that we have finished a training phase..
     for (const auto &l : listeners)
-        l->stop_training(get_error(data));
+        l->stop_training(get_error(tr_data), get_error(tst_data));
 #endif
 }
 
-void network::update_mini_batch(const std::vector<training_data *> &mini_batch, const double &eta)
+void network::update_mini_batch(const std::vector<data_row *> &mini_batch, const double &eta)
 {
     // we perform backpropagation..
-    for (training_data *data : mini_batch)
+    for (data_row *data : mini_batch)
         backprop(*data);
 
     // we update the biases, the weigths, and clean up things..
@@ -120,7 +120,7 @@ void network::update_mini_batch(const std::vector<training_data *> &mini_batch, 
         }
 }
 
-void network::backprop(const training_data &data)
+void network::backprop(const data_row &data)
 {
     error_f.compute_deltas(*this, data);
 

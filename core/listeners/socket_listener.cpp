@@ -40,11 +40,11 @@ socket_listener::~socket_listener()
 #endif
 }
 
-void socket_listener::start_training(const double &error) { send_message("start_training " + std::to_string(error) + "\n"); }
-void socket_listener::stop_training(const double &error) { send_message("stop_training " + std::to_string(error) + "\n"); }
+void socket_listener::start_training(const std::size_t &n_epochs, const double &tr_error, const double &tst_error) { send_message("strt_tr{\"n_epcs\":" + std::to_string(n_epochs) + ", \"tr_error\":" + std::to_string(tr_error) + ", \"tst_error\":" + std::to_string(tst_error) + "}\n"); }
+void socket_listener::stop_training(const double &tr_error, const double &tst_error) { send_message("stp_tr{\"tr_error\":" + std::to_string(tr_error) + ", \"tst_error\":" + std::to_string(tst_error) + "}\n"); }
 
-void socket_listener::start_epoch(const double &error) { send_message("start_epoch " + std::to_string(error) + "\n"); }
-void socket_listener::stop_epoch(const double &error) { send_message("stop_epoch " + std::to_string(error) + "\n"); }
+void socket_listener::start_epoch(const double &tr_error, const double &tst_error) { send_message("strt_epc{\"tr_error\":" + std::to_string(tr_error) + ", \"tst_error\":" + std::to_string(tst_error) + "}\n"); }
+void socket_listener::stop_epoch(const double &tr_error, const double &tst_error) { send_message("stp_epc{\"tr_error\":" + std::to_string(tr_error) + ", \"tst_error\":" + std::to_string(tst_error) + "}\n"); }
 
 void socket_listener::send_message(const std::string &msg)
 {

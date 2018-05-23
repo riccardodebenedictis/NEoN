@@ -7,10 +7,10 @@ namespace nn
 
 inline void error_function::set_delta(network &net, const std::size_t &l, const std::size_t &n, const double &delta) { net.set_delta(l, n, delta); }
 
-double mean_squared_error::error(network &net, const std::vector<training_data *> &data)
+double mean_squared_error::error(network &net, const std::vector<data_row *> &data)
 {
     double err = 0;
-    for (training_data *d : data)
+    for (data_row *d : data)
     {
         std::vector<double> c_output = net.forward(d->input);
         for (std::size_t i = 0; i < c_output.size(); ++i)
@@ -19,7 +19,7 @@ double mean_squared_error::error(network &net, const std::vector<training_data *
     return err / data.size();
 }
 
-void mean_squared_error::compute_deltas(network &net, const training_data &data)
+void mean_squared_error::compute_deltas(network &net, const data_row &data)
 {
     // forward propagation..
     std::vector<double> c_output = net.forward(data.input);
@@ -49,10 +49,10 @@ void mean_squared_error::compute_deltas(network &net, const training_data &data)
     }
 }
 
-double cross_entropy::error(network &net, const std::vector<training_data *> &data)
+double cross_entropy::error(network &net, const std::vector<data_row *> &data)
 {
     double err = 0;
-    for (training_data *d : data)
+    for (data_row *d : data)
     {
         std::vector<double> c_output = net.forward(d->input);
         for (std::size_t i = 0; i < c_output.size(); ++i)
@@ -61,7 +61,7 @@ double cross_entropy::error(network &net, const std::vector<training_data *> &da
     return -err / data.size();
 }
 
-void cross_entropy::compute_deltas(network &net, const training_data &data)
+void cross_entropy::compute_deltas(network &net, const data_row &data)
 {
     // forward propagation..
     std::vector<double> c_output = net.forward(data.input);
