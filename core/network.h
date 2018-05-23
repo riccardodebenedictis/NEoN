@@ -18,16 +18,16 @@ class neuron
   friend class network;
 
 public:
-  activation_function &act_f;
-  const std::size_t size;
+  activation_function &act_f; // the activation function of the neuron..
+  const std::size_t size;     // the number of synapsis of the neuron..
 
 private:
-  std::vector<double> weights;
-  double bias;
-  double output;
-  double delta;
-  std::vector<double> nabla_w;
-  double nabla_b;
+  std::vector<double> weights; // the weights of the neuron..
+  double bias;                 // the bias..
+  double output;               // the output computed by the last call to the 'forward' procedure..
+  double delta;                // the delta error of the neuron..
+  std::vector<double> nabla_w; // the partial derivatives over the weigths..
+  double nabla_b;              // the partial derivative over the bias..
 
 public:
   neuron(std::default_random_engine &gen, activation_function &af, const std::size_t &size);

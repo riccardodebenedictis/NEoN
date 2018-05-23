@@ -53,8 +53,6 @@ network::network(error_function &ef, activation_function &af, const std::vector<
 {
     for (std::size_t i = 0; i < sizes.size() - 1; ++i)
         layers[i] = new layer(gen, af, sizes[i + 1], sizes[i]);
-    for (neuron *n : layers[0]->neurons)
-        n->bias = 0;
 }
 
 network::~network()
