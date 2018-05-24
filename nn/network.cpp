@@ -40,6 +40,14 @@ network::~network()
         delete layers[i];
 }
 
+double network::get_error(std::vector<data_row *> &data)
+{
+    double err = 0;
+    for (data_row *d : data)
+        err += ef.error(forward(d->x), d->y);
+    return err / data.size();
+}
+
 std::vector<double> network::forward(const std::vector<double> &x)
 {
     std::vector<double> a = layers[0]->forward(af, x);

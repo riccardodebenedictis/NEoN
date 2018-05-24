@@ -51,7 +51,7 @@ public:
   network(const network &orig) = delete;
   ~network();
 
-  layer &get_layer(const std::size_t &l) const { return *layers[l]; }
+  double get_error(std::vector<data_row *> &data);
 
   std::vector<double> forward(const std::vector<double> &x);
 
@@ -63,6 +63,7 @@ public:
 private:
   std::vector<network_listener *> listeners; // the network listeners..
 
+public:
   void network::add_listener(network_listener &l) { listeners.push_back(&l); }
   void network::remove_listener(network_listener &l) { listeners.erase(std::find(listeners.begin(), listeners.end(), &l)); }
 #endif

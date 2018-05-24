@@ -11,7 +11,7 @@ double mean_squared_error::error(const std::vector<double> &a, const std::vector
     double err = 0;
     for (std::size_t i = 0; i < a.size(); ++i)
         err += pow(a[i] - y[i], 2);
-    return err / a.size();
+    return err;
 }
 
 std::vector<double> mean_squared_error::delta(const activation_f &af, const std::vector<double> &z, const std::vector<double> &a, const std::vector<double> &y) const
@@ -30,7 +30,7 @@ double cross_entropy::error(const std::vector<double> &a, const std::vector<doub
     double err = 0;
     for (std::size_t i = 0; i < a.size(); ++i)
         err += y[i] * log(a[i]) + (1 - y[i]) * log(1 - a[i]);
-    return isnan(err) ? 0 : -err / a.size();
+    return isnan(err) ? 0 : -err;
 }
 
 std::vector<double> cross_entropy::delta(const activation_f &af, const std::vector<double> &z, const std::vector<double> &a, const std::vector<double> &y) const
