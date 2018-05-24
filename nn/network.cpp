@@ -121,6 +121,7 @@ void network::backprop(const data_row &data)
             layers[i - 1]->delta[j] = 0;
             for (std::size_t k = 0; k < layers[i]->lr_size; ++k)
                 layers[i - 1]->delta[j] += layers[i]->w[k][j] * layers[i]->delta[k];
+            layers[i - 1]->delta[j] *= layers[i - 1]->z[j];
         }
 
     // we use the computed deltas to update the nablas..
