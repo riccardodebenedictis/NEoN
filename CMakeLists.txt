@@ -19,7 +19,7 @@ set ( CMAKE_CXX_STANDARD 14 )
 
 file( GLOB SOURCES main.cpp nn/*.cpp )
 if( CMAKE_BUILD_TYPE MATCHES Debug )
-  #list( APPEND SOURCES nn/listeners/socket_listener.cpp ) 
+  list( APPEND SOURCES nn/listeners/socket_listener.cpp ) 
 endif()
 
 include_directories( nn nn/listeners )

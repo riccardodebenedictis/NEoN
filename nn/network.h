@@ -1,6 +1,9 @@
 #pragma once
 
 #include "error_f.h"
+#ifndef NDEBUG
+#include "network_listener.h"
+#endif
 #include <random>
 
 namespace nn
@@ -55,5 +58,13 @@ public:
   void sgd(std::vector<data_row *> &tr_data, std::vector<data_row *> &eval_data, const std::size_t &epochs, const std::size_t &mini_batch_size, const double &eta, const double &lambda);
   void update_mini_batch(const std::vector<data_row *> &mini_batch, const double &eta, const double &lambda);
   void backprop(const data_row &data);
+
+#ifndef NDEBUG
+private:
+  std::vector<network_listener *> listeners; // the network listeners..
+
+  void network::add_listener(network_listener &l) { listeners.push_back(&l); }
+  void network::remove_listener(network_listener &l) { listeners.erase(std::find(listeners.begin(), listeners.end(), &l)); }
+#endif
 };
 } // namespace nn
