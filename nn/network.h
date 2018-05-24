@@ -64,8 +64,8 @@ private:
   std::vector<network_listener *> listeners; // the network listeners..
 
 public:
-  void network::add_listener(network_listener &l) { listeners.push_back(&l); }
-  void network::remove_listener(network_listener &l) { listeners.erase(std::find(listeners.begin(), listeners.end(), &l)); }
+  void add_listener(network_listener &l) { listeners.push_back(&l); }
+  void remove_listener(network_listener &l) { listeners.erase(std::find(listeners.begin(), listeners.end(), &l)); }
 #endif
 };
 } // namespace nn
