@@ -17,12 +17,12 @@ endif()
 
 set ( CMAKE_CXX_STANDARD 14 )
 
-file( GLOB SOURCES main.cpp core/*.cpp )
+file( GLOB SOURCES main.cpp nn/*.cpp )
 if( CMAKE_BUILD_TYPE MATCHES Debug )
-  list( APPEND SOURCES core/listeners/socket_listener.cpp ) 
+  #list( APPEND SOURCES nn/listeners/socket_listener.cpp ) 
 endif()
 
-include_directories( core core/listeners )
+include_directories( nn nn/listeners )
 
 add_executable( ${PROJECT_NAME} ${SOURCES} )
 
@@ -31,5 +31,5 @@ if( CMAKE_BUILD_TYPE MATCHES Debug )
     target_link_libraries( ${PROJECT_NAME} wsock32 ws2_32 #[[-PROFILE]] )
   endif()
   include( CTest )
-  add_subdirectory( core/tests )
+  #add_subdirectory( core/tests )
 endif()

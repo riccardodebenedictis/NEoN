@@ -3,18 +3,18 @@
 namespace nn
 {
 
-class activation_function
+class activation_f
 {
 public:
-  activation_function() {}
-  activation_function(const activation_function &orig) = delete;
-  virtual ~activation_function() {}
+  activation_f() {}
+  activation_f(const activation_f &orig) = delete;
+  virtual ~activation_f() {}
 
   virtual double compute(const double &val) const = 0;
   virtual double derivative(const double &val) const = 0;
 };
 
-class sigmoid : public activation_function
+class sigmoid : public activation_f
 {
 
 public:
@@ -26,7 +26,7 @@ public:
   double derivative(const double &val) const override;
 };
 
-class linear : public activation_function
+class linear : public activation_f
 {
 
 public:
@@ -34,8 +34,8 @@ public:
   linear(const linear &orig) = delete;
   ~linear() {}
 
-  double compute(const double &val) const override { return val; }
-  double derivative(const double &val) const override { return 1.0; }
+  double compute(const double &val) const override;
+  double derivative(const double &val) const override;
 };
 
 } // namespace nn
