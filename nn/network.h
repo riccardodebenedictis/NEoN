@@ -18,6 +18,7 @@ private:
   std::vector<double> b;                    // the biases of the layer..
   std::vector<double> z;                    // the weighted inputs to the neurons..
   std::vector<double> a;                    // the outputs of the neurons..
+  std::vector<double> delta;                // the delta errors of the neurons..
   std::vector<std::vector<double>> nabla_w; // the partial derivative of the neurons..
   std::vector<double> nabla_b;              // the derivative of the biases..
 
@@ -41,7 +42,6 @@ private:
   error_f &ef;
   activation_f &af;
   std::vector<layer *> layers;
-  std::vector<std::vector<double>> delta;
 
 public:
   const std::size_t size;

@@ -3,7 +3,7 @@
 namespace nn
 {
 
-layer::layer(std::default_random_engine &gen, const std::size_t &lr_size, const std::size_t &nr_size) : lr_size(lr_size), nr_size(nr_size), w(lr_size, std::vector<double>(nr_size)), b(lr_size), z(lr_size), a(lr_size), nabla_w(lr_size, std::vector<double>(nr_size)), nabla_b(lr_size)
+layer::layer(std::default_random_engine &gen, const std::size_t &lr_size, const std::size_t &nr_size) : lr_size(lr_size), nr_size(nr_size), w(lr_size, std::vector<double>(nr_size)), b(lr_size), z(lr_size), a(lr_size), delta(lr_size, 0), nabla_w(lr_size, std::vector<double>(nr_size, 0)), nabla_b(lr_size, 0)
 {
     std::normal_distribution<double> n_dist(0, 1);
     for (std::size_t i = 0; i < lr_size; ++i)
@@ -21,14 +21,14 @@ std::vector<double> layer::forward(const activation_f &af, const std::vector<dou
     for (std::size_t i = 0; i < lr_size; ++i)
     {
         z[i] = b[i];
-        for (std::size_t j = 0; j < nr_size; ++i)
-            z[i] += w[i][j] * x[i];
+        for (std::size_t j = 0; j < nr_size; ++j)
+            z[i] += w[i][j] * x[j];
         a[i] = af.compute(z[i]);
     }
     return a;
 }
 
-network::network(error_f &ef, activation_f &af, const std::vector<std::size_t> &sizes) : ef(ef), af(af), layers(sizes.size() - 1), delta(sizes.size() - 1), size(sizes.size() - 1)
+network::network(error_f &ef, activation_f &af, const std::vector<std::size_t> &sizes) : ef(ef), af(af), layers(sizes.size() - 1), size(sizes.size() - 1)
 {
     for (std::size_t i = 0; i < sizes.size() - 1; ++i)
         layers[i] = new layer(gen, sizes[i + 1], sizes[i]);
@@ -112,31 +112,31 @@ void network::backprop(const data_row &data)
     std::vector<double> a = forward(data.x);
 
     // we compute the deltas for the output layer..
-    delta[layers.size() - 1] = ef.delta(af, layers[layers.size() - 1]->z, a, data.y);
+    layers[layers.size() - 1]->delta = ef.delta(af, layers[layers.size() - 1]->z, a, data.y);
 
     // we compute the deltas for the other layers..
     for (std::size_t i = size - 1; i > 0; --i)
         for (std::size_t j = 0; j < layers[i - 1]->lr_size; ++j)
         {
-            delta[i - 1][j] = 0;
+            layers[i - 1]->delta[j] = 0;
             for (std::size_t k = 0; k < layers[i]->lr_size; ++k)
-                delta[i - 1][j] += layers[i]->w[k][j] * delta[i][k];
+                layers[i - 1]->delta[j] += layers[i]->w[k][j] * layers[i]->delta[k];
         }
 
     // we use the computed deltas to update the nablas..
     for (std::size_t i = size - 1; i >= 1; --i)
         for (std::size_t j = 0; j < layers[i]->lr_size; ++j)
         {
-            layers[i]->nabla_b[j] += delta[i][j];
+            layers[i]->nabla_b[j] += layers[i]->delta[j];
             for (std::size_t k = 0; k < layers[i - 1]->lr_size; ++k)
-                layers[i]->nabla_w[j][k] += layers[i - 1]->a[k] * delta[i][j];
+                layers[i]->nabla_w[j][k] += layers[i - 1]->a[k] * layers[i]->delta[j];
         }
 
     for (std::size_t i = 0; i < layers[0]->lr_size; ++i)
     {
-        layers[0]->nabla_b[i] += delta[0][i];
+        layers[0]->nabla_b[i] += layers[0]->delta[i];
         for (std::size_t k = 0; k < data.x.size(); ++k)
-            layers[0]->nabla_w[i][k] += data.x[k] * delta[0][i];
+            layers[0]->nabla_w[i][k] += data.x[k] * layers[0]->delta[i];
     }
 }
 } // namespace nn
