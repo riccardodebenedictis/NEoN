@@ -3,6 +3,7 @@
 #include "error_f.h"
 #ifndef NDEBUG
 #include "network_listener.h"
+#include <algorithm>
 #endif
 #include <random>
 
