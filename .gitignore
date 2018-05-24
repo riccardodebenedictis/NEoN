@@ -1,6 +1,6 @@
 /.vscode
 /build
-/core/gui/.settings
-/core/gui/target
-/core/gui/.classpath
-/core/gui/.project
+/nn/gui/.settings
+/nn/gui/target
+/nn/gui/.classpath
+/nn/gui/.project
