@@ -56,7 +56,19 @@ public:
 
   std::vector<double> forward(const std::vector<double> &x);
 
+  /**
+   * performs stochastic gradient descent on the given training data.
+   * 
+   * @param tr_data a vector of 'data_row's representing the training data.
+   * @param eval_data a vector of 'data_row's representing the evaluation data (might be useful for meta-parameters initialization).
+   * @param epochs a positive integer representing the number of epochs (i.e. the number of performed training steps).
+   * @param mini_batch_size a positive integer representing the size of the mini-batch.
+   * @param eta a positive real representing the learning rate.
+   * @param lambda a positive real representing the regularization parameter.
+   */
   void sgd(std::vector<data_row *> &tr_data, std::vector<data_row *> &eval_data, const std::size_t &epochs, const std::size_t &mini_batch_size, const double &eta, const double &lambda);
+
+private:
   void update_mini_batch(const std::vector<data_row *> &mini_batch, const double &eta, const double &lambda);
   void backprop(const data_row &data);
 
