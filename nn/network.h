@@ -15,13 +15,15 @@ class layer
   friend class network;
 
 private:
-  std::vector<std::vector<double>> w;       // the weights of the layer..
-  std::vector<double> b;                    // the biases of the layer..
-  std::vector<double> z;                    // the weighted inputs to the neurons..
-  std::vector<double> a;                    // the outputs of the neurons..
-  std::vector<double> delta;                // the delta errors of the neurons..
-  std::vector<std::vector<double>> nabla_w; // the partial derivative of the neurons..
-  std::vector<double> nabla_b;              // the derivative of the biases..
+  std::vector<std::vector<double>> w;            // the weights of the layer..
+  std::vector<double> b;                         // the biases of the layer..
+  std::vector<double> z;                         // the weighted inputs to the neurons..
+  std::vector<double> a;                         // the outputs of the neurons..
+  std::vector<double> delta;                     // the delta errors of the neurons..
+  std::vector<std::vector<double>> nabla_w;      // the partial derivative of the neurons..
+  std::vector<double> nabla_b;                   // the derivative of the biases..
+  std::vector<std::vector<double>> last_nabla_w; // the last partial derivative of the neurons (for momentum)..
+  std::vector<double> last_nabla_b;              // the last derivative of the biases (for momentum)..
 
 public:
   const std::size_t lr_size; // the number of neurons..
@@ -64,12 +66,13 @@ public:
    * @param epochs a positive integer representing the number of epochs (i.e. the number of performed training steps).
    * @param mini_batch_size a positive integer representing the size of the mini-batch.
    * @param eta a positive real representing the learning rate.
+   * @param mu a positive (and strictly less than one) real representing the momentum.
    * @param lambda a positive real representing the regularization parameter.
    */
-  void sgd(std::vector<data_row *> &tr_data, std::vector<data_row *> &eval_data, const std::size_t &epochs, const std::size_t &mini_batch_size, const double &eta, const double &lambda);
+  void sgd(std::vector<data_row *> &tr_data, std::vector<data_row *> &eval_data, const std::size_t &epochs, const std::size_t &mini_batch_size, const double &eta, const double &mu, const double &lambda);
 
 private:
-  void update_mini_batch(const std::vector<data_row *> &mini_batch, const double &eta, const double &lambda);
+  void update_mini_batch(const std::vector<data_row *> &mini_batch, const double &eta, const double &mu, const double &lambda);
   void backprop(const data_row &data);
 
 #ifndef NDEBUG

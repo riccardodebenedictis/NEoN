@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 #endif
 
     // we train the network through stochastic gradient descent..
-    net.sgd(tr_data, tst_data, 20000, 2, 0.005, 0);
+    net.sgd(tr_data, tst_data, 20000, 2, 0.0005, 0.5, 0);
 
     // this is the current error on training data after the training..
     double t_err = net.get_error(tr_data);

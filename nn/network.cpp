@@ -3,7 +3,7 @@
 namespace nn
 {
 
-layer::layer(std::default_random_engine &gen, const std::size_t &lr_size, const std::size_t &nr_size) : lr_size(lr_size), nr_size(nr_size), w(lr_size, std::vector<double>(nr_size)), b(lr_size), z(lr_size), a(lr_size), delta(lr_size, 0), nabla_w(lr_size, std::vector<double>(nr_size, 0)), nabla_b(lr_size, 0)
+layer::layer(std::default_random_engine &gen, const std::size_t &lr_size, const std::size_t &nr_size) : lr_size(lr_size), nr_size(nr_size), w(lr_size, std::vector<double>(nr_size)), b(lr_size), z(lr_size), a(lr_size), delta(lr_size, 0), nabla_w(lr_size, std::vector<double>(nr_size, 0)), nabla_b(lr_size, 0), last_nabla_w(lr_size, std::vector<double>(nr_size, 0)), last_nabla_b(lr_size, 0)
 {
     std::normal_distribution<double> n_dist(0, 1);
     for (std::size_t i = 0; i < lr_size; ++i)
@@ -56,7 +56,7 @@ std::vector<double> network::forward(const std::vector<double> &x)
     return a;
 }
 
-void network::sgd(std::vector<data_row *> &tr_data, std::vector<data_row *> &eval_data, const std::size_t &epochs, const std::size_t &mini_batch_size, const double &eta, const double &lambda)
+void network::sgd(std::vector<data_row *> &tr_data, std::vector<data_row *> &eval_data, const std::size_t &epochs, const std::size_t &mini_batch_size, const double &eta, const double &mu, const double &lambda)
 {
 #ifndef NDEBUG
     // we notify the listeners that we are starting a training phase..
@@ -74,7 +74,7 @@ void network::sgd(std::vector<data_row *> &tr_data, std::vector<data_row *> &eva
         std::shuffle(tr_data.begin(), tr_data.end(), gen);
         // we partition the training data into mini batches of 'mini_batch_size' size..
         for (std::size_t j = 0; j <= tr_data.size() - mini_batch_size; j += mini_batch_size)
-            update_mini_batch(std::vector<data_row *>(tr_data.begin() + j, tr_data.begin() + j + mini_batch_size), eta, lambda);
+            update_mini_batch(std::vector<data_row *>(tr_data.begin() + j, tr_data.begin() + j + mini_batch_size), eta, mu, lambda);
 #ifndef NDEBUG
         // we notify the listeners that we have finished an epoch..
         for (const auto &l : listeners)
@@ -88,7 +88,7 @@ void network::sgd(std::vector<data_row *> &tr_data, std::vector<data_row *> &eva
 #endif
 }
 
-void network::update_mini_batch(const std::vector<data_row *> &mini_batch, const double &eta, const double &lambda)
+void network::update_mini_batch(const std::vector<data_row *> &mini_batch, const double &eta, const double &mu, const double &lambda)
 {
     // we perform backpropagation..
     for (data_row *data : mini_batch)
@@ -98,10 +98,14 @@ void network::update_mini_batch(const std::vector<data_row *> &mini_batch, const
     for (std::size_t i = 0; i < size; ++i)
         for (std::size_t j = 0; j < layers[i]->lr_size; ++j)
         {
-            layers[i]->b[j] -= (eta / mini_batch.size()) * layers[i]->nabla_b[j];
+            layers[i]->b[j] -= (eta / mini_batch.size()) * layers[i]->nabla_b[j] + mu * layers[i]->last_nabla_b[j];
+            layers[i]->last_nabla_b[j] = layers[i]->nabla_b[j];
             layers[i]->nabla_b[j] = 0;
             for (std::size_t k = 0; k < layers[i]->nr_size; ++k)
-                layers[i]->w[j][k] -= (eta / mini_batch.size()) * layers[i]->nabla_w[j][k] + ((eta * lambda) / mini_batch.size()) * layers[i]->w[j][k];
+            {
+                layers[i]->w[j][k] -= (eta / mini_batch.size()) * layers[i]->nabla_w[j][k] + ((eta * lambda) / mini_batch.size()) * layers[i]->w[j][k] + mu * layers[i]->last_nabla_w[j][k];
+                layers[i]->last_nabla_w[j][k] = layers[i]->nabla_w[j][k];
+            }
             layers[i]->nabla_w[j].assign(layers[i]->nr_size, 0);
         }
 }
