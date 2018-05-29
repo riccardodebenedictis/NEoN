@@ -2,7 +2,7 @@
 
 NEoN is a minimalistic artificial NEural Network framework written in C++ which has been designed to be extremely simple to use.
 
-Unlike other approaches, NEoN allows the training of the same network starting from different training data so as to allow its use in a Reinforcement Learning (RL) context.
+Unlike other approaches, NEoN allows the training of the same network starting from different training data so as to allow its use in a (deep) Reinforcement Learning (RL) context.
 
 ## Getting started
 
