@@ -1,5 +1,5 @@
 #include "error_f.h"
-#include <cmath>
+#include <math.h>
 #include <cassert>
 
 namespace nn
